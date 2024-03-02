@@ -11,23 +11,6 @@ const getData = async (req, res, next) => {
     }
     const getUser = await Users.find(req?.query);
 
-    //end_year filter
-    // const allEndYears = getUser.map((data) => data?.end_year);
-    // const uniqueAllEndYears = [...new Set(allEndYears)];
-    // console.log('uniqueAllEndYears', uniqueAllEndYears);
-
-    // if (uniqueAllEndYears.includes(req?.body?.end_year)) {
-    //   const selectedEndYear = getUser.filter((user) => {
-    //     return user?.end_year === req?.body?.end_year;
-    //   });
-    //   const selectedEndYearLength = selectedEndYear.length;
-    //   console.log(`${req?.body?.end_year}`, selectedEndYearLength);
-    // }
-    // const endYear = getUser.filter((user) => {
-    //   return user?.end_year !== null;
-    // });
-    // const endYearLength = endYear.length;
-
     //topics filter
     const namesTopics = getUser.map((data) => data?.topic);
     const uniqueNamesTopics = [...new Set(namesTopics)];

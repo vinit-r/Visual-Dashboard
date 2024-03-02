@@ -5,33 +5,46 @@ const CodersUsers = require('../../../../models/authUsers');
 
 const signUpUser = async (req, res, next) => {
   try {
-    const bcryptPassword = await bcrypt.hash(req?.body?.password, 10);
+    const isUserExist = await CodersUsers.findOne(req?.body?.email);
+    if (isUserExist) {
+      res.send({
+        status: 404,
+        message: 'User is already exist',
+      });
+    } else {
+      const bcryptPassword = await bcrypt.hash(req?.body?.password, 10);
 
-    const user = {
-      firstName: req?.body?.firstName,
-      lastName: req?.body?.lastName,
-      email: req?.body?.email,
-      password: bcryptPassword,
-    };
-    const addUsers = await CodersUsers.create(user);
-    // console.log('addUsers', addUsers)
+      const user = {
+        firstName: req?.body?.firstName,
+        lastName: req?.body?.lastName,
+        email: req?.body?.email,
+        password: bcryptPassword,
+      };
 
-    const secretKey = 'Vinit Pawar';
-    const payload = { _id: addUsers?._id };
-    const options = {
-      expiresIn: '1h',
-    };
-    const token = jwt.sign(payload, secretKey, options);
-    // console.log('token', token);
-    res
-      .header('auth-token', token)
-      .send({ status: 200, message: 'Success', data: addUsers, token: token });
+      const addUsers = await CodersUsers.create(user);
+      // console.log('addUsers', addUsers)
 
-    // res.send({
-    //   status: 200,
-    //   message: 'Success',
-    //   data: addUsers,
-    // });
+      const secretKey = 'Vinit_Pawar';
+      const payload = { _id: addUsers?._id };
+      const options = {
+        expiresIn: '1h',
+      };
+
+      const token = jwt.sign(payload, secretKey, options);
+      // console.log('token', token);
+      res.header('auth-token', token).send({
+        status: 200,
+        message: 'Success',
+        data: addUsers,
+        token: token,
+      });
+
+      // res.send({
+      //   status: 200,
+      //   message: 'Success',
+      //   data: addUsers,
+      // });
+    }
   } catch (error) {
     next(error);
   }

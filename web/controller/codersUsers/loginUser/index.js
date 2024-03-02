@@ -7,11 +7,11 @@ const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req?.body;
     if (!(password && email)) {
-      const error = {
+      const loginError = {
         status: 404,
         message: 'Password and Email is Required',
       };
-      throw error;
+      throw loginError;
     }
     const getUser = await CodersUsers.findOne({ email });
     // console.log('getUser', getUser);
@@ -24,20 +24,26 @@ const loginUser = async (req, res, next) => {
       throw userNotFoundError;
     }
 
-    if (!(await bcrypt.compare(password, getUser?.password))) {
-      const passwordError = {
+    const passCheck = await bcrypt.compare(password, getUser?.password);
+
+    if (!passCheck) {
+      const wrongPasswordError = {
         status: 404,
         message: 'Please enter valid password',
       };
-      throw passwordError;
+      throw wrongPasswordError;
     }
-    const secretKey = 'Vinit Pawar';
+
+    const secretKey = 'Vinit_Pawar';
     const payload = { _id: getUser?._id };
     const options = {
       expiresIn: '1h',
     };
     const token = jwt.sign(payload, secretKey, options);
     res.header('auth-token', token).send({ token: token });
+
+    const verifyToken = req?.headers['authorization'];
+    console.log('verifyToken', verifyToken);
 
     res.send({
       status: 200,
